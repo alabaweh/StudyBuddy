@@ -9,50 +9,41 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
-    private List<String> courses;
-    private OnCourseClickListener listener;
+public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
+    private List<String> courses; // Use List to handle dynamic data
 
-    public interface OnCourseClickListener {
-        void onCourseClick(String course);
-    }
-
-    public CourseAdapter(List<String> courses, OnCourseClickListener listener) {
+    // Constructor to pass the data to the adapter
+    public CourseAdapter(List<String> courses) {
         this.courses = courses;
-        this.listener = listener;
+    }
+
+    // ViewHolder to hold the reference to the TextView
+    public static class CourseViewHolder extends RecyclerView.ViewHolder {
+        TextView courseNameTextView;
+
+        public CourseViewHolder(View itemView) {
+            super(itemView);
+            courseNameTextView = itemView.findViewById(R.id.textViewCourseName);
+        }
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+    public CourseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // Inflate the layout for each item in the RecyclerView
+        View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.course_item, parent, false);
-        return new ViewHolder(view);
+        return new CourseViewHolder(itemView);
     }
 
-
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        String course = courses.get(position);
-        holder.textViewCourseName.setText(course);
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onCourseClick(course);
-            }
-        });
+    public void onBindViewHolder(CourseViewHolder holder, int position) {
+        // Bind the data (list of strings) to the TextView
+        holder.courseNameTextView.setText(courses.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return courses.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewCourseName;
-
-        public ViewHolder(View view) {
-            super(view);
-            textViewCourseName = view.findViewById(R.id.textViewCourseName);
-        }
+        return courses.size(); // Return the size of the list
     }
 }
+

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirstPageActivity extends AppCompatActivity implements CourseAdapter.OnCourseClickListener{
+public class FirstPageActivity extends AppCompatActivity{
 
     private User user;
     private RecyclerView recyclerViewCourses;
@@ -34,8 +34,8 @@ public class FirstPageActivity extends AppCompatActivity implements CourseAdapte
         recyclerViewCourses.setLayoutManager(new LinearLayoutManager(this));
 
         // Initialize course list
-        courses = new ArrayList<>();
-        adapter = new CourseAdapter(courses, this);
+        courses = user.selectedCourses;
+        adapter = new CourseAdapter(courses);
         recyclerViewCourses.setAdapter(adapter);
 
         // Set up buttons
@@ -43,6 +43,8 @@ public class FirstPageActivity extends AppCompatActivity implements CourseAdapte
         Button buttonLogout = findViewById(R.id.buttonLogout);
 
         Button buttonNewCourse = findViewById(R.id.buttonAddCourse);
+
+        loadCourses();
 
         buttonHomeScreen.setOnClickListener(v -> {
             // Navigate to home screen
@@ -62,7 +64,7 @@ public class FirstPageActivity extends AppCompatActivity implements CourseAdapte
             startActivity(intent);
         });
 
-        loadCourses();
+
 
 
 
@@ -74,13 +76,7 @@ public class FirstPageActivity extends AppCompatActivity implements CourseAdapte
         adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onCourseClick(String course) {
-        // Navigate to course details or study groups for this course
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("course", course);
-        startActivity(intent);
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
