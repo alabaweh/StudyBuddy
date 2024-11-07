@@ -3,8 +3,13 @@ package com.example.studybuddy;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +24,7 @@ public class FirstPageActivity extends AppCompatActivity{
     private CourseAdapter adapter;
     private ArrayList<String> courses;
 
-    private static final int ADD_COURSE_REQUEST = 1;
+    private ActivityResultLauncher<Intent> intentLauncher;
 
 
     @Override
@@ -34,8 +39,8 @@ public class FirstPageActivity extends AppCompatActivity{
         recyclerViewCourses.setLayoutManager(new LinearLayoutManager(this));
 
         // Initialize course list
-        courses = user.selectedCourses;
-        adapter = new CourseAdapter(courses);
+        courses = new ArrayList<String>();
+        adapter = new CourseAdapter();
         recyclerViewCourses.setAdapter(adapter);
 
         // Set up buttons
@@ -61,8 +66,25 @@ public class FirstPageActivity extends AppCompatActivity{
         buttonNewCourse.setOnClickListener(v->{
             Intent intent = new Intent(this, AddCourseActivity.class);
             intent.putExtra("user",user);
-            startActivity(intent);
+            intentLauncher.launch(intent);
         });
+
+        intentLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(androidx.activity.result.ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            // Extract the data from the result Intent
+                            user = result.getData().getParcelableExtra("user");
+                            loadCourses();
+
+                            // You can now use these values (for example, show them as a Toast)
+
+                        }
+                    }
+                }
+        );
 
 
 
@@ -71,9 +93,8 @@ public class FirstPageActivity extends AppCompatActivity{
     }
     private void loadCourses() {
         // This would typically come from your database or API
-        courses = user.selectedCourses;
-        System.out.println(courses);
-        adapter.notifyDataSetChanged();
+        List<String> newCourses = user.selectedCourses;
+        adapter.submitList(newCourses);
     }
 
 
@@ -81,10 +102,13 @@ public class FirstPageActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_COURSE_REQUEST && resultCode == RESULT_OK) {
+
+        if (resultCode == RESULT_OK) {
+            // Extract the modified data from the Intent
+            user = data.getParcelableExtra("user");
             loadCourses();
-        }
     }
+        }
 
 
 }

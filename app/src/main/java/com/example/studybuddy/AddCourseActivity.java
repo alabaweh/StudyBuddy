@@ -1,5 +1,6 @@
 package com.example.studybuddy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -54,6 +55,9 @@ public class AddCourseActivity extends AppCompatActivity {
         firestoreHandler.updateUser(user);
 
         // Close the activity and return to previous screen
+        Intent intent = new Intent();
+        intent.putExtra("user",user);
+        setResult(RESULT_OK,intent);
         finish();
     }
 }
