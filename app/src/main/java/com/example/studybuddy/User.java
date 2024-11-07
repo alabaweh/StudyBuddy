@@ -15,7 +15,7 @@ public class User implements Parcelable {
     private String id;
 
     public String email;
-    public ArrayList<String> selectedCourses;
+    public ArrayList<String> selectedCourses = new ArrayList<String>();
 
     User(){
 
@@ -29,6 +29,9 @@ public class User implements Parcelable {
     protected User(Parcel in) {
         name = in.readString();
         email = in.readString();
+        id = in.readString();
+        selectedCourses = in.createStringArrayList();
+
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -52,6 +55,8 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(name);
         parcel.writeString(email);
+        parcel.writeString(id);
+        parcel.writeStringList(selectedCourses);
     }
 
 

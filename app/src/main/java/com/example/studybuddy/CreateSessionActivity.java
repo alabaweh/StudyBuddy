@@ -91,23 +91,6 @@ public class CreateSessionActivity extends AppCompatActivity {
     }
 
     private void createSession() {
-        String title = titleInput.getText().toString().trim();
-        String location = locationInput.getText().toString().trim();
 
-        if (title.isEmpty() || location.isEmpty()) {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Save session to database
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        long result = dbHelper.createSession(title, selectedDate.getTime(), location);
-
-        if (result != -1) {
-            Toast.makeText(this, "Session created successfully", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            Toast.makeText(this, "Failed to create session", Toast.LENGTH_SHORT).show();
-        }
     }
 }

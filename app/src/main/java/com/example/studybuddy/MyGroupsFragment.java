@@ -4,26 +4,24 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.app.AlertDialog;
-import com.example.studybuddy.DatabaseHelper;
 
 public class MyGroupsFragment extends Fragment {
     private ListView groupsListView;
     private FloatingActionButton createGroupFab;
-    private DatabaseHelper dbHelper;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_groups, container, false);
 
-        dbHelper = new DatabaseHelper(getActivity());
+
         groupsListView = view.findViewById(R.id.groupsListView);
         createGroupFab = view.findViewById(R.id.createGroupFab);
 
@@ -60,13 +58,7 @@ public class MyGroupsFragment extends Fragment {
 
     private void createGroup(String name, String course) {
         // Add group to database and refresh list
-        long result = dbHelper.createGroup(name, course);
-        if (result != -1) {
-            Toast.makeText(getActivity(), "Group created successfully", Toast.LENGTH_SHORT).show();
-            loadGroups();
-        } else {
-            Toast.makeText(getActivity(), "Failed to create group", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
     private void loadGroups() {

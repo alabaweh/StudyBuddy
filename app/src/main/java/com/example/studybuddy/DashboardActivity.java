@@ -9,6 +9,7 @@ import com.example.studybuddy.ViewPagerAdapter;
 
 public class DashboardActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
+    private User user;
     private TabLayout tabLayout;
 
     @Override
@@ -19,6 +20,8 @@ public class DashboardActivity extends AppCompatActivity {
         // Initialize views
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
+
+        user = getIntent().getParcelableExtra("user");
 
         // Setup ViewPager with custom adapter
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(this);

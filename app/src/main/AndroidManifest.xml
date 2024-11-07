@@ -59,6 +59,11 @@
             android:theme="@style/Theme.StudyBuddy"
             android:parentActivityName=".DashboardActivity" />
 
+        <activity android:name=".FirstPageActivity"/>
+
+        <activity android:name=".AddCourseActivity"/>
+
+
     </application>
 
     <!-- Permissions -->
