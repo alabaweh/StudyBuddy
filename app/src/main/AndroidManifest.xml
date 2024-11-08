@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:name=".StudyBuddyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,67 +18,43 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.StudyBuddy">
+            android:theme="@style/Theme.StudyBuddy.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Register Activity -->
         <activity
-            android:name=".RegisterActivity"
-            android:exported="false"
-            android:theme="@style/Theme.StudyBuddy"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activities.RegisterActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
-        <!-- Dashboard Activity -->
         <activity
-            android:name=".DashboardActivity"
-            android:exported="false"
-            android:theme="@style/Theme.StudyBuddy"
-            android:label="Dashboard" />
+            android:name=".activities.DashboardActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
-        <!-- Chat Activity -->
         <activity
-            android:name=".ChatActivity"
-            android:exported="false"
-            android:theme="@style/Theme.StudyBuddy"
-            android:parentActivityName=".DashboardActivity"
+            android:name=".activities.GroupDetailsActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
+
+        <activity
+            android:name=".activities.ChatActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Create Session Activity -->
         <activity
-            android:name=".CreateSessionActivity"
-            android:exported="false"
-            android:theme="@style/Theme.StudyBuddy"
-            android:parentActivityName=".DashboardActivity" />
+            android:name=".activities.CalendarActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
-        <!-- Resource View Activity -->
         <activity
-            android:name=".ResourceViewActivity"
-            android:exported="false"
-            android:theme="@style/Theme.StudyBuddy"
-            android:parentActivityName=".DashboardActivity" />
+            android:name=".activities.AddSessionActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
-        <activity android:name=".FirstPageActivity"/>
-
-        <activity android:name=".AddCourseActivity"/>
-
+        <activity
+            android:name=".activities.ResourcesActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
     </application>
-
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <!-- For Android 13 and above -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-
 </manifest>

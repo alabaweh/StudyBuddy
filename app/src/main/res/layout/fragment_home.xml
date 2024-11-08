@@ -10,26 +10,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
+        <TextView
+            android:id="@+id/welcomeTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:iconifiedByDefault="false"
-            android:queryHint="Search resources" />
+            android:padding="16dp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/noResourcesTextView"
+            android:id="@+id/noGroupsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="No resources available"
+            android:text="You haven't joined any groups yet"
             android:textSize="16sp"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/resourcesRecyclerView"
+            android:id="@+id/groupsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -38,13 +38,13 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/uploadButton"
+        android:id="@+id/addGroupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Upload Resource"
-        app:srcCompat="@drawable/ic_upload" />
+        android:contentDescription="Create Group"
+        app:srcCompat="@drawable/ic_add_group" />
 
     <ProgressBar
         android:id="@+id/progressBar"

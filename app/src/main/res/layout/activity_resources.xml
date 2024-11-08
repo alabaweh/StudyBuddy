@@ -10,13 +10,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:iconifiedByDefault="false"
-            android:queryHint="Search resources" />
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search resources" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <TextView
             android:id="@+id/noResourcesTextView"
@@ -28,11 +34,12 @@
             android:textSize="16sp"
             android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/resourcesRecyclerView"
+        <ListView
+            android:id="@+id/resourcesListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp"
             android:padding="8dp" />
 
     </LinearLayout>
