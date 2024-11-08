@@ -247,7 +247,7 @@ public class CreateGroupDialogFragment extends DialogFragment {
                     }
                 });
     }
-
+// working
     @Override
     public void onDetach() {
         super.onDetach();
