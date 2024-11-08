@@ -206,7 +206,7 @@ public class CreateGroupDialogFragment extends DialogFragment {
         progressBar.setVisibility(View.VISIBLE);
         createButton.setEnabled(false);
 
-        // Create group document
+        // Create group documen
         Group group = new Group();
         group.setName(groupName);
         group.setCourseName(courseName);
