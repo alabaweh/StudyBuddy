@@ -120,9 +120,13 @@ public class CreateGroupDialogFragment extends DialogFragment {
                     allUsers.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         User user = document.toObject(User.class);
-                        if (user != null && !user.getId().equals(currentUserId)) {
+                        if (user != null) {
+                            // Set the ID first before any comparisons
                             user.setId(document.getId());
-                            allUsers.add(user);
+                            // Only add other users, not the current user
+                            if (!document.getId().equals(currentUserId)) {
+                                allUsers.add(user);
+                            }
                         }
                     }
                     setupUsersAdapter();
@@ -136,21 +140,26 @@ public class CreateGroupDialogFragment extends DialogFragment {
 
     private void setupUsersAdapter() {
         UsersAdapter adapter = new UsersAdapter(allUsers, user -> {
-            if (selectedUserIds.contains(user.getId())) {
-                selectedUserIds.remove(user.getId());
-                removeUserChip(user);
-            } else {
-                selectedUserIds.add(user.getId());
-                addUserChip(user);
+            String userId = user.getId();
+            if (userId != null) {  // Add null check
+                if (selectedUserIds.contains(userId)) {
+                    selectedUserIds.remove(userId);
+                    removeUserChip(user);
+                } else {
+                    selectedUserIds.add(userId);
+                    addUserChip(user);
+                }
+                updateCreateButtonState();
             }
-            updateCreateButtonState();
         });
         usersRecyclerView.setAdapter(adapter);
     }
 
     private void addUserChip(User user) {
+        if (user.getId() == null) return;  // Add null check
+
         Chip chip = new Chip(requireContext());
-        chip.setText(user.getName());
+        chip.setText(user.getName() != null ? user.getName() : "Unknown User");
         chip.setCloseIconVisible(true);
         chip.setTag(user.getId());
         chip.setOnCloseIconClickListener(v -> {
@@ -162,9 +171,11 @@ public class CreateGroupDialogFragment extends DialogFragment {
     }
 
     private void removeUserChip(User user) {
+        if (user.getId() == null) return;  // Add null check
+
         for (int i = 0; i < selectedUsersChipGroup.getChildCount(); i++) {
             Chip chip = (Chip) selectedUsersChipGroup.getChildAt(i);
-            if (chip.getTag().equals(user.getId())) {
+            if (chip.getTag() != null && chip.getTag().equals(user.getId())) {  // Add null check
                 selectedUsersChipGroup.removeView(chip);
                 break;
             }
@@ -172,7 +183,10 @@ public class CreateGroupDialogFragment extends DialogFragment {
     }
 
     private void updateCreateButtonState() {
-        createButton.setEnabled(selectedUserIds.size() >= 5);
+        // Add check to prevent NPE
+        if (createButton != null) {
+            createButton.setEnabled(selectedUserIds.size() >= 5);
+        }
     }
 
     private void createGroup() {
