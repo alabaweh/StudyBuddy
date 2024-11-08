@@ -103,7 +103,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     }
 
     private void leaveGroup(Group group, int position) {
-        if (group.getMembers().size() <= 5) {
+        if (group.getMembers().size() <= 2) {
             Toast.makeText(context, "Group requires minimum 5 members", Toast.LENGTH_SHORT).show();
             return;
         }

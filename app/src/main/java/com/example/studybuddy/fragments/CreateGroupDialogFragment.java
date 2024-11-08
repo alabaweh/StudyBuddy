@@ -5,29 +5,43 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.studybuddy.R;
+import com.example.studybuddy.adapters.UsersAdapter;
 import com.example.studybuddy.models.Group;
+import com.example.studybuddy.models.User;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CreateGroupDialogFragment extends DialogFragment {
     private TextInputEditText groupNameInput;
     private AutoCompleteTextView courseSpinner;
+    private RecyclerView usersRecyclerView;
+    private ChipGroup selectedUsersChipGroup;
+    private Button createButton;
+    private ProgressBar progressBar;
+
     private FirebaseFirestore db;
     private String currentUserId;
     private Context context;
     private OnGroupCreatedListener listener;
+    private Set<String> selectedUserIds = new HashSet<>();
+    private List<User> allUsers = new ArrayList<>();
 
     public interface OnGroupCreatedListener {
         void onGroupCreated();
@@ -48,14 +62,14 @@ public class CreateGroupDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_create_group, null);
+        View view = inflater.inflate(R.layout.dialog_create_group_with_members, null);
 
         initializeViews(view);
         setupCourseSpinner();
+        loadUsers();
 
         builder.setView(view)
                 .setTitle("Create Group")
-                .setPositiveButton("Create", (dialog, id) -> createGroup())
                 .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
 
         return builder.create();
@@ -64,8 +78,20 @@ public class CreateGroupDialogFragment extends DialogFragment {
     private void initializeViews(View view) {
         groupNameInput = view.findViewById(R.id.groupNameInput);
         courseSpinner = view.findViewById(R.id.courseSpinner);
+        usersRecyclerView = view.findViewById(R.id.usersRecyclerView);
+        selectedUsersChipGroup = view.findViewById(R.id.selectedUsersChipGroup);
+        createButton = view.findViewById(R.id.createButton);
+        progressBar = view.findViewById(R.id.progressBar);
+
         db = FirebaseFirestore.getInstance();
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Add current user to selected users
+        selectedUserIds.add(currentUserId);
+
+        createButton.setOnClickListener(v -> createGroup());
+
+        usersRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     private void setupCourseSpinner() {
@@ -86,14 +112,85 @@ public class CreateGroupDialogFragment extends DialogFragment {
         courseSpinner.setAdapter(adapter);
     }
 
+    private void loadUsers() {
+        progressBar.setVisibility(View.VISIBLE);
+        db.collection("users")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    allUsers.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        User user = document.toObject(User.class);
+                        if (user != null && !user.getId().equals(currentUserId)) {
+                            user.setId(document.getId());
+                            allUsers.add(user);
+                        }
+                    }
+                    setupUsersAdapter();
+                    progressBar.setVisibility(View.GONE);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to load users", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                });
+    }
+
+    private void setupUsersAdapter() {
+        UsersAdapter adapter = new UsersAdapter(allUsers, user -> {
+            if (selectedUserIds.contains(user.getId())) {
+                selectedUserIds.remove(user.getId());
+                removeUserChip(user);
+            } else {
+                selectedUserIds.add(user.getId());
+                addUserChip(user);
+            }
+            updateCreateButtonState();
+        });
+        usersRecyclerView.setAdapter(adapter);
+    }
+
+    private void addUserChip(User user) {
+        Chip chip = new Chip(requireContext());
+        chip.setText(user.getName());
+        chip.setCloseIconVisible(true);
+        chip.setTag(user.getId());
+        chip.setOnCloseIconClickListener(v -> {
+            selectedUserIds.remove(user.getId());
+            selectedUsersChipGroup.removeView(chip);
+            updateCreateButtonState();
+        });
+        selectedUsersChipGroup.addView(chip);
+    }
+
+    private void removeUserChip(User user) {
+        for (int i = 0; i < selectedUsersChipGroup.getChildCount(); i++) {
+            Chip chip = (Chip) selectedUsersChipGroup.getChildAt(i);
+            if (chip.getTag().equals(user.getId())) {
+                selectedUsersChipGroup.removeView(chip);
+                break;
+            }
+        }
+    }
+
+    private void updateCreateButtonState() {
+        createButton.setEnabled(selectedUserIds.size() >= 5);
+    }
+
     private void createGroup() {
         String groupName = groupNameInput.getText().toString().trim();
         String courseName = courseSpinner.getText().toString().trim();
 
         if (groupName.isEmpty() || courseName.isEmpty()) {
-            showToast("Please fill all fields");
+            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if (selectedUserIds.size() < 5) {
+            Toast.makeText(context, "Please select at least 5 members", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+        createButton.setEnabled(false);
 
         // Create group document
         Group group = new Group();
@@ -101,10 +198,7 @@ public class CreateGroupDialogFragment extends DialogFragment {
         group.setCourseName(courseName);
         group.setCreatedBy(currentUserId);
         group.setCreatedAt(new Date());
-
-        List<String> members = new ArrayList<>();
-        members.add(currentUserId);
-        group.setMembers(members);
+        group.setMembers(new ArrayList<>(selectedUserIds));
 
         db.collection("groups")
                 .add(group)
@@ -113,29 +207,31 @@ public class CreateGroupDialogFragment extends DialogFragment {
                     documentReference.update("id", groupId)
                             .addOnSuccessListener(aVoid -> {
                                 if (context != null) {
-                                    showToast("Group created successfully");
+                                    Toast.makeText(context,
+                                            "Group created successfully", Toast.LENGTH_SHORT).show();
                                 }
                                 if (listener != null) {
                                     listener.onGroupCreated();
                                 }
+                                dismiss();
                             })
                             .addOnFailureListener(e -> {
+                                progressBar.setVisibility(View.GONE);
+                                createButton.setEnabled(true);
                                 if (context != null) {
-                                    showToast("Failed to update group ID");
+                                    Toast.makeText(context,
+                                            "Failed to update group ID", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 })
                 .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    createButton.setEnabled(true);
                     if (context != null) {
-                        showToast("Failed to create group: " + e.getMessage());
+                        Toast.makeText(context,
+                                "Failed to create group: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void showToast(String message) {
-        if (context != null) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
