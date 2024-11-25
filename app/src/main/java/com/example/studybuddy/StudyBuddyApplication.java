@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.example.studybuddy.utils.FirebaseUtils;
 
 public class StudyBuddyApplication extends Application {
@@ -17,6 +18,9 @@ public class StudyBuddyApplication extends Application {
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
         FirebaseUtils.initialize();
+
+        // Initialize Firebase App Check
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
 
         // Create notification channel for Android O and above
         createNotificationChannel();
@@ -33,9 +37,7 @@ public class StudyBuddyApplication extends Application {
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.setDescription("Notifications for new messages and study sessions");
-
-            NotificationManager notificationManager =
-                    getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
@@ -53,7 +55,6 @@ public class StudyBuddyApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        // Clean up resources
         FirebaseUtils.updateUserPresence(false);
         FirebaseUtils.cleanup();
     }

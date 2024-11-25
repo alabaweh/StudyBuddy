@@ -10,9 +10,9 @@ import com.example.studybuddy.R;
 import com.example.studybuddy.models.Session;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class AddSessionActivity extends AppCompatActivity {
     private EditText titleInput, locationInput;
@@ -24,6 +24,8 @@ public class AddSessionActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String groupId;
     private String currentUserId;
+
+    private SimpleDateFormat dateTimeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,9 @@ public class AddSessionActivity extends AppCompatActivity {
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Initialize date/time format
+        dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
         initializeViews();
         setupListeners();
@@ -114,43 +119,80 @@ public class AddSessionActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         createSessionButton.setEnabled(false);
 
-        Session session = new Session();
-        session.setTitle(title);
-        session.setLocation(location);
-        session.setDate(selectedDate);
-        session.setStartTime(selectedStartTime);
-        session.setEndTime(selectedEndTime);
-        session.setParticipants(new ArrayList<>());
-        session.setGroupId(groupId);
-        session.setCreatedBy(currentUserId);
-        session.setCreatedAt(new Date());
+        // Parse and validate dates and times
+        try {
+            Date startDateTime = dateTimeFormat.parse(selectedDate + " " + selectedStartTime);
+            Date endDateTime = dateTimeFormat.parse(selectedDate + " " + selectedEndTime);
 
-        db.collection("groups")
-                .document(groupId)
-                .collection("sessions")
-                .add(session)
-                .addOnSuccessListener(documentReference -> {
-                    String sessionId = documentReference.getId();
-                    documentReference.update("id", sessionId)
-                            .addOnSuccessListener(aVoid -> {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(AddSessionActivity.this,
-                                        "Session created successfully", Toast.LENGTH_SHORT).show();
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                progressBar.setVisibility(View.GONE);
-                                createSessionButton.setEnabled(true);
-                                Toast.makeText(AddSessionActivity.this,
-                                        "Failed to update session ID", Toast.LENGTH_SHORT).show();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    createSessionButton.setEnabled(true);
-                    Toast.makeText(AddSessionActivity.this,
-                            "Failed to create session: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                });
+            if (startDateTime == null || endDateTime == null) {
+                Toast.makeText(this, "Invalid date or time format", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                createSessionButton.setEnabled(true);
+                return;
+            }
+
+            // Check if start time is before end time
+            if (!startDateTime.before(endDateTime)) {
+                Toast.makeText(this, "Start time must be before end time", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                createSessionButton.setEnabled(true);
+                return;
+            }
+
+            // Check if the start time is not in the past
+            Date currentDateTime = new Date();
+            if (startDateTime.before(currentDateTime)) {
+                Toast.makeText(this, "Start time cannot be in the past", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                createSessionButton.setEnabled(true);
+                return;
+            }
+
+            // Proceed to create the session
+            Session session = new Session();
+            session.setTitle(title);
+            session.setLocation(location);
+            session.setDate(selectedDate);
+            session.setStartTime(selectedStartTime);
+            session.setEndTime(selectedEndTime);
+            session.setParticipants(new ArrayList<>());
+            session.setGroupId(groupId);
+            session.setCreatedBy(currentUserId);
+            session.setCreatedAt(new Date());
+
+            db.collection("groups")
+                    .document(groupId)
+                    .collection("sessions")
+                    .add(session)
+                    .addOnSuccessListener(documentReference -> {
+                        String sessionId = documentReference.getId();
+                        documentReference.update("id", sessionId)
+                                .addOnSuccessListener(aVoid -> {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(AddSessionActivity.this,
+                                            "Session created successfully", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    progressBar.setVisibility(View.GONE);
+                                    createSessionButton.setEnabled(true);
+                                    Toast.makeText(AddSessionActivity.this,
+                                            "Failed to update session ID", Toast.LENGTH_SHORT).show();
+                                });
+                    })
+                    .addOnFailureListener(e -> {
+                        progressBar.setVisibility(View.GONE);
+                        createSessionButton.setEnabled(true);
+                        Toast.makeText(AddSessionActivity.this,
+                                "Failed to create session: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    });
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error parsing date/time", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            createSessionButton.setEnabled(true);
+        }
     }
 }

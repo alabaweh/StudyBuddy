@@ -60,11 +60,10 @@ public class ResourcesFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
 
         resources = new ArrayList<>();
-
-        // Setup RecyclerView
-        resourcesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         resourcesAdapter = new ResourcesAdapter(requireContext(), resources);
-        resourcesRecyclerView.setAdapter((RecyclerView.Adapter) resourcesAdapter);
+
+        resourcesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        resourcesRecyclerView.setAdapter(resourcesAdapter);  // This should now work
     }
 
     private void initializeFirebase() {

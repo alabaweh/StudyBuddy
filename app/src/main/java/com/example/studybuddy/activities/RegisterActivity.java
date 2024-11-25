@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
-    private TextInputEditText nameInput, emailInput, passwordInput;
+    private TextInputEditText nameInput, emailInput, passwordInput, confirmPasswordInput;
     private AutoCompleteTextView courseSpinner;
     private ChipGroup selectedCoursesChipGroup;
     private Button registerButton;
@@ -54,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.nameInput);
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
+        confirmPasswordInput = findViewById(R.id.confirmPasswordInput); // Added confirm password input
         courseSpinner = findViewById(R.id.courseSpinner);
         selectedCoursesChipGroup = findViewById(R.id.selectedCoursesChipGroup);
         registerButton = findViewById(R.id.registerButton);
@@ -70,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
         courseSpinner.setOnItemClickListener((parent, view, position, id) -> {
             String selectedCourse = availableCourses.get(position);
             addCourse(selectedCourse);
+            courseSpinner.setText(""); // Clear the spinner text after selection
         });
     }
 
@@ -97,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
         selectedCoursesChipGroup.addView(chip);
     }
 
-    private boolean validateInputs(String name, String email, String password) {
+    private boolean validateInputs(String name, String email, String password, String confirmPassword) {
         if (!ValidationUtils.isValidUsername(name)) {
             nameInput.setError("Please enter a valid name (3-30 characters)");
             return false;
@@ -110,6 +112,10 @@ public class RegisterActivity extends AppCompatActivity {
             passwordInput.setError(ValidationUtils.getPasswordRequirements());
             return false;
         }
+        if (!password.equals(confirmPassword)) {
+            confirmPasswordInput.setError("Passwords do not match");
+            return false;
+        }
         if (selectedCourses.isEmpty()) {
             Toast.makeText(this, "Please select at least one course", Toast.LENGTH_SHORT).show();
             return false;
@@ -120,9 +126,10 @@ public class RegisterActivity extends AppCompatActivity {
     private void registerUser() {
         String name = nameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String password = passwordInput.getText().toString();
+        String confirmPassword = confirmPasswordInput.getText().toString();
 
-        if (!validateInputs(name, email, password)) {
+        if (!validateInputs(name, email, password, confirmPassword)) {
             return;
         }
 

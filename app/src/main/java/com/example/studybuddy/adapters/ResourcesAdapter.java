@@ -1,15 +1,12 @@
 package com.example.studybuddy.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.studybuddy.R;
@@ -39,32 +36,15 @@ public class ResourcesAdapter extends RecyclerView.Adapter<ResourcesAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Resource resource = resources.get(position);
-
         holder.resourceNameText.setText(resource.getName());
         holder.uploaderText.setText("Uploaded by: " + resource.getUploaderName());
 
         if (resource.getUploadDate() != null) {
-            holder.uploadTimeText.setText("Uploaded on: " +
-                    dateFormat.format(resource.getUploadDate()));
+            holder.uploadTimeText.setText("Uploaded on: " + dateFormat.format(resource.getUploadDate()));
         }
 
+        // Set a default icon
         holder.resourceTypeIcon.setImageResource(R.drawable.ic_file);
-
-        holder.downloadButton.setOnClickListener(v -> {
-            if (resource.getUrl() != null && !resource.getUrl().isEmpty()) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(resource.getUrl()));
-                try {
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    Toast.makeText(context,
-                            "Unable to open this file type", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(context,
-                        "Download link not available", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -78,19 +58,19 @@ public class ResourcesAdapter extends RecyclerView.Adapter<ResourcesAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        final ImageView resourceTypeIcon;
-        final TextView resourceNameText;
-        final TextView uploaderText;
-        final TextView uploadTimeText;
-        final ImageButton downloadButton;
+        public final ImageView resourceTypeIcon;
+        public final TextView resourceNameText;
+        public final TextView uploaderText;
+        public final TextView uploadTimeText;
+        public final ImageButton downloadButton;
 
-        ViewHolder(View itemView) {
-            super(itemView);
-            resourceTypeIcon = itemView.findViewById(R.id.resourceTypeIcon);
-            resourceNameText = itemView.findViewById(R.id.resourceNameText);
-            uploaderText = itemView.findViewById(R.id.uploaderText);
-            uploadTimeText = itemView.findViewById(R.id.uploadTimeText);
-            downloadButton = itemView.findViewById(R.id.downloadButton);
+        public ViewHolder(View view) {
+            super(view);
+            resourceTypeIcon = view.findViewById(R.id.resourceTypeIcon);
+            resourceNameText = view.findViewById(R.id.resourceNameText);
+            uploaderText = view.findViewById(R.id.uploaderText);
+            uploadTimeText = view.findViewById(R.id.uploadTimeText);
+            downloadButton = view.findViewById(R.id.downloadButton);
         }
     }
 }
