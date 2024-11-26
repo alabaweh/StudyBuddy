@@ -22,7 +22,7 @@ import java.util.UUID;
 public class RegisterActivityTest {
 
     @Test
-    public void testValidRegistration() {
+    public void testValidRegistration() throws InterruptedException {
         ActivityScenario.launch(RegisterActivity.class);
 
         String uniqueEmail = "testuser" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
@@ -36,6 +36,7 @@ public class RegisterActivityTest {
         onView(withText("Computer Science")).inRoot(RootMatchers.isPlatformPopup()).perform(click());
 
         onView(withId(R.id.registerButton)).perform(click());
+        Thread.sleep(4000);
 
         // Verify that the user is redirected to the DashboardActivity
         onView(withId(R.id.fragmentContainer))

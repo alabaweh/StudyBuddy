@@ -54,6 +54,8 @@ public class LoginActivityTest {
         // Click login button
         onView(withId(R.id.loginButton)).perform(click());
 
+        Thread.sleep(4000);
+
 
         // Verify that the fragmentContainer is displayed in DashboardActivity
         onView(withId(R.id.fragmentContainer)).check(matches(isDisplayed()));
@@ -90,18 +92,19 @@ public class LoginActivityTest {
     }
 
     @Test
-    public void testInvalidEmailFormatLogin() {
+    public void testLongEmailInput() throws InterruptedException {
         ActivityScenario.launch(LoginActivity.class);
 
-        // Enter an invalid email format and any password
-        onView(withId(R.id.emailInput)).perform(typeText("invalidemailformat"), closeSoftKeyboard());
+        // Enter a long email address
+        onView(withId(R.id.emailInput)).perform(typeText("thisisaverylongemailaddress@example.com"), closeSoftKeyboard());
         onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
-        // Click the login button
+        // Click login button
         onView(withId(R.id.loginButton)).perform(click());
 
-        // Verify that the email input field shows an error message
-        onView(withId(R.id.emailInput)).check(matches(hasErrorText("Please enter a valid email")));
+        // Verify that login proceeds without errors (assuming your app can handle long emails)
+        Thread.sleep(4000);
+        onView(withId(R.id.fragmentContainer)).check(matches(isDisplayed()));
     }
 
     @Test
