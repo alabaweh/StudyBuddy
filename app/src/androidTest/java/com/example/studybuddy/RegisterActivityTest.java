@@ -121,7 +121,7 @@ public class RegisterActivityTest {
         onView(withText("Biology")).inRoot(RootMatchers.isPlatformPopup()).perform(click());
 
         onView(withId(R.id.registerButton)).perform(click());
-
+        Thread.sleep(4000);
         // Verify that the user is redirected to the DashboardActivity
         onView(withId(R.id.fragmentContainer))
                 .check(matches(isDisplayed()));
