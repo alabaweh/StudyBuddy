@@ -98,7 +98,7 @@ public class LoginActivityTest {
 
     onView(withId(R.id.loginButton)).perform(click());
 
-    onView(withText("Login failed: The password is invalid or the user does not have a password.")).check(matches(isDisplayed()));
+    onView(withText("Login failed: The password is invalid or the user does not exist.")).check(matches(isDisplayed()));
 
     }
 
