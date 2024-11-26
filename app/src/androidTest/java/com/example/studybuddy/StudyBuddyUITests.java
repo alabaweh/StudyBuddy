@@ -116,9 +116,10 @@ public class StudyBuddyUITests {
 
 
 
+    // to see group details
     @Test
-    public void testSessionFeatures() {
-        onView(withId(R.id.navigation_calendar))
+    public void testGroupdetails() {
+        onView(withId(R.id.navigation_home))
                 .perform(click());
     }
 
