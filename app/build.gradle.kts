@@ -31,6 +31,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
@@ -46,6 +47,16 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-analytics")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("org.mockito:mockito-inline:3.12.4")
+    testImplementation("org.powermock:powermock-module-junit4:2.0.9")
+    testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
+    testImplementation("androidx.test:core:1.4.0")
+    testImplementation("androidx.test.ext:junit:1.1.3")
+    testImplementation("org.robolectric:robolectric:4.8")
+
 
     // Firebase App Check (use without version numbers)
     implementation("com.google.firebase:firebase-appcheck")
