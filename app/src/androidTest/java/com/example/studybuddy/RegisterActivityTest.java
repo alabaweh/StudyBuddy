@@ -15,6 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import java.util.UUID;
+
 
 @RunWith(AndroidJUnit4.class)
 public class RegisterActivityTest {
@@ -22,9 +24,11 @@ public class RegisterActivityTest {
     @Test
     public void testValidRegistration() {
         ActivityScenario.launch(RegisterActivity.class);
+
+        String uniqueEmail = "testuser" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
         // Fill out the registration form with valid data
         onView(withId(R.id.nameInput)).perform(typeText("Test User"), closeSoftKeyboard());
-        onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.emailInput)).perform(typeText(uniqueEmail), closeSoftKeyboard());
         onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
         onView(withId(R.id.confirmPasswordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
@@ -101,7 +105,7 @@ public class RegisterActivityTest {
 
         // Fill out the registration form with valid data
         onView(withId(R.id.nameInput)).perform(typeText("Test User2"), closeSoftKeyboard());
-        onView(withId(R.id.emailInput)).perform(typeText("test4@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.emailInput)).perform(typeText("test6@example.com"), closeSoftKeyboard());
         onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
         onView(withId(R.id.confirmPasswordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
@@ -121,4 +125,3 @@ public class RegisterActivityTest {
     }
 
 }
-
