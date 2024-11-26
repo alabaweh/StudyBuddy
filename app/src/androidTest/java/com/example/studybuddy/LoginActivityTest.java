@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.example.studybuddy.activities.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,12 @@ public class LoginActivityTest {
     public void setUp() {
         // Mock FirebaseAuth
         mockAuth = FirebaseAuth.getInstance();
+    }
+
+    @After
+    public void tearDown() {
+        // Clear any persisted state
+        mockAuth.signOut();
     }
 
     @Test
