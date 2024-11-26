@@ -90,16 +90,18 @@ public class LoginActivityTest {
     }
 
     @Test
-    public void testFailedLogin() {
+    public void testInvalidEmailFormatLogin() {
         ActivityScenario.launch(LoginActivity.class);
 
-    onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
-    onView(withId(R.id.passwordInput)).perform(typeText("WrongPassword"), closeSoftKeyboard());
+        // Enter an invalid email format and any password
+        onView(withId(R.id.emailInput)).perform(typeText("invalidemailformat"), closeSoftKeyboard());
+        onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
-    onView(withId(R.id.loginButton)).perform(click());
+        // Click the login button
+        onView(withId(R.id.loginButton)).perform(click());
 
-    onView(withText("Login failed: The password is invalid or the user does not exist.")).check(matches(isDisplayed()));
-
+        // Verify that the email input field shows an error message
+        onView(withId(R.id.emailInput)).check(matches(hasErrorText("Please enter a valid email")));
     }
 
     @Test
