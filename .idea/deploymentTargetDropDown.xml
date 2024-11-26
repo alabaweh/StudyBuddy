@@ -5,6 +5,18 @@
       <entry key="app">
         <State />
       </entry>
+      <entry key="testCalendarAccessibility()">
+        <State />
+      </entry>
+      <entry key="testHomeNavigation()">
+        <State />
+      </entry>
+      <entry key="testNavigationFlow()">
+        <State />
+      </entry>
+      <entry key="testSessionFeatures()">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

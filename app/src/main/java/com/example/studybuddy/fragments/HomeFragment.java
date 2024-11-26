@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.studybuddy.R;
 import com.example.studybuddy.activities.GroupDetailsActivity;
 import com.example.studybuddy.adapters.GroupsAdapter;
@@ -21,6 +23,7 @@ import com.example.studybuddy.utils.FirebaseUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class HomeFragment extends Fragment implements GroupsAdapter.OnGroupClick
     private FirebaseFirestore db;
     private User currentUser;
     private String currentUserId;
+    private ListenerRegistration groupsListener;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -59,7 +63,7 @@ public class HomeFragment extends Fragment implements GroupsAdapter.OnGroupClick
         groups = new ArrayList<>();
         groupsAdapter = new GroupsAdapter(requireContext(), groups, this);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        groupsRecyclerView.setAdapter((RecyclerView.Adapter) groupsAdapter);
+        groupsRecyclerView.setAdapter(groupsAdapter);
 
         noGroupsTextView.setText("No groups available yet");
     }
@@ -70,35 +74,49 @@ public class HomeFragment extends Fragment implements GroupsAdapter.OnGroupClick
 
         FirebaseUtils.getCurrentUser()
                 .addOnSuccessListener(user -> {
-                    currentUser = user;
-                    if (user != null) {
+                    if (isAdded() && user != null) {
+                        currentUser = user;
                         welcomeTextView.setText("Welcome, " + user.getName());
                         loadAllGroups();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(),
-                            "Failed to get current user", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(),
+                                "Failed to get current user", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
                 });
     }
 
     private void setupListeners() {
         addGroupButton.setOnClickListener(v -> {
-            CreateGroupDialogFragment dialog = new CreateGroupDialogFragment();
-            dialog.setOnGroupCreatedListener(this::loadAllGroups);
-            dialog.show(getParentFragmentManager(), "CreateGroupDialog");
+            if (isAdded()) {
+                CreateGroupDialogFragment dialog = new CreateGroupDialogFragment();
+                dialog.setOnGroupCreatedListener(this::loadAllGroups);
+                dialog.show(getParentFragmentManager(), "CreateGroupDialog");
+            }
         });
     }
 
     private void loadAllGroups() {
+        if (!isAdded()) return;
+
         progressBar.setVisibility(View.VISIBLE);
-        db.collection("groups")
+
+        // Remove any existing listener
+        if (groupsListener != null) {
+            groupsListener.remove();
+        }
+
+        groupsListener = db.collection("groups")
                 .addSnapshotListener((value, error) -> {
+                    if (!isAdded()) return;
+
                     progressBar.setVisibility(View.GONE);
 
                     if (error != null) {
-                        Toast.makeText(getContext(),
+                        Toast.makeText(requireContext(),
                                 "Error loading groups", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -119,6 +137,8 @@ public class HomeFragment extends Fragment implements GroupsAdapter.OnGroupClick
     }
 
     private void updateUI() {
+        if (!isAdded()) return;
+
         if (groups.isEmpty()) {
             noGroupsTextView.setVisibility(View.VISIBLE);
             groupsRecyclerView.setVisibility(View.GONE);
@@ -130,9 +150,19 @@ public class HomeFragment extends Fragment implements GroupsAdapter.OnGroupClick
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (groupsListener != null) {
+            groupsListener.remove();
+        }
+    }
+
+    @Override
     public void onGroupClick(Group group) {
-        Intent intent = new Intent(getActivity(), GroupDetailsActivity.class);
-        intent.putExtra("groupId", group.getId());
-        startActivity(intent);
+        if (isAdded()) {
+            Intent intent = new Intent(requireActivity(), GroupDetailsActivity.class);
+            intent.putExtra("groupId", group.getId());
+            startActivity(intent);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.studybuddy.activities;
 
+import android.annotation.SuppressLint; // Add this import
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -86,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    @SuppressLint("MissingSuperCall") // Suppress the lint warning
     @Override
     public void onBackPressed() {
         // Exit app if on login screen
