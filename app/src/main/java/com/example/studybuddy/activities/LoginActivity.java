@@ -11,10 +11,12 @@ import com.example.studybuddy.utils.ValidationUtils;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText emailInput, passwordInput;
-    private Button loginButton, signupButton;
-    private ProgressBar progressBar;
-    private FirebaseAuth auth;
+    private EditText emailInput;
+    public EditText passwordInput;
+    public Button loginButton;
+    public Button signupButton;
+    public ProgressBar progressBar;
+    public FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +46,14 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
-    private void setupButtons() {
+    public void setupButtons() {
         loginButton.setOnClickListener(v -> loginUser());
         signupButton.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
     }
 
-    private void loginUser() {
+    public void loginUser() {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
 
@@ -83,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginButton.setEnabled(true);
                     signupButton.setEnabled(true);
                     Toast.makeText(LoginActivity.this,
-                            "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            "Login failed: The password is invalid or the user does not exist." , Toast.LENGTH_SHORT).show();
                 });
     }
 

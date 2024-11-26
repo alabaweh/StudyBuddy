@@ -9,14 +9,15 @@ public class ValidationUtils {
     private static final int MIN_USERNAME_LENGTH = 3;
     private static final int MAX_USERNAME_LENGTH = 30;
 
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{6,}$"
     );
 
     // Email validation
     public static boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) &&
-                Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        return email != null && email.matches(EMAIL_REGEX);
     }
 
     // Password validation

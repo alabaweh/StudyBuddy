@@ -26,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private List<String> selectedCourses;
+    public List<String> selectedCourses;
     private List<String> availableCourses;
 
     @Override
@@ -79,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> registerUser());
     }
 
-    private void addCourse(String course) {
+    public void addCourse(String course) {
         if (!selectedCourses.contains(course)) {
             selectedCourses.add(course);
             addChip(course);
@@ -99,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
         selectedCoursesChipGroup.addView(chip);
     }
 
-    private boolean validateInputs(String name, String email, String password, String confirmPassword) {
+    public boolean validateInputs(String name, String email, String password, String confirmPassword) {
         if (!ValidationUtils.isValidUsername(name)) {
             nameInput.setError("Please enter a valid name (3-30 characters)");
             return false;
