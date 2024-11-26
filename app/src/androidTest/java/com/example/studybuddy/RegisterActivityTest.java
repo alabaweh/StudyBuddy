@@ -24,7 +24,7 @@ public class RegisterActivityTest {
         ActivityScenario.launch(RegisterActivity.class);
         // Fill out the registration form with valid data
         onView(withId(R.id.nameInput)).perform(typeText("Test User"), closeSoftKeyboard());
-        onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.emailInput)).perform(typeText("test5@example.com"), closeSoftKeyboard());
         onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
         onView(withId(R.id.confirmPasswordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
@@ -101,7 +101,7 @@ public class RegisterActivityTest {
 
         // Fill out the registration form with valid data
         onView(withId(R.id.nameInput)).perform(typeText("Test User2"), closeSoftKeyboard());
-        onView(withId(R.id.emailInput)).perform(typeText("test4@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.emailInput)).perform(typeText("test6@example.com"), closeSoftKeyboard());
         onView(withId(R.id.passwordInput)).perform(typeText("Password123"), closeSoftKeyboard());
         onView(withId(R.id.confirmPasswordInput)).perform(typeText("Password123"), closeSoftKeyboard());
 
