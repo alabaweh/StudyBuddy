@@ -40,6 +40,13 @@ public class RegisterActivityTestWhite {
         assertFalse(isValid);
     }
 
+    @Test
+    public void testValidateInputs_InvalidPassword() {
+        // Simulate a weak password
+        boolean isValid = registerActivity.validateInputs("John Doe", "johndoe@example.com", "weak", "weak");
+        assertFalse(isValid);
+    }
+
 
 }
 
