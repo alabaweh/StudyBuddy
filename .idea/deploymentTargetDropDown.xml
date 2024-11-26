@@ -5,16 +5,19 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="testCalendarAccessibility()">
+      <entry key="testCreateGroup()">
         <State />
       </entry>
-      <entry key="testHomeNavigation()">
+      <entry key="testCreateSessionInGroup()">
         <State />
       </entry>
       <entry key="testNavigationFlow()">
         <State />
       </entry>
       <entry key="testSessionFeatures()">
+        <State />
+      </entry>
+      <entry key="testViewGroupDetails()">
         <State />
       </entry>
     </value>

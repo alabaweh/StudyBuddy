@@ -1,9 +1,12 @@
+
 package com.example.studybuddy;
 
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+
 
 import com.example.studybuddy.activities.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,11 +18,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -36,29 +45,25 @@ public class StudyBuddyUITests {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource());
         FirebaseAuth.getInstance().signOut();
 
-        // Wait for Firebase operations
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Perform login
-        onView(withId(R.id.emailInput))
+        // Login
+        onView(allOf(
+                withId(R.id.emailInput),
+                isDescendantOfA(withClassName(endsWith("TextInputLayout")))
+        ))
                 .perform(replaceText(TEST_EMAIL), closeSoftKeyboard());
 
-        onView(withId(R.id.passwordInput))
+        onView(allOf(
+                withId(R.id.passwordInput),
+                isDescendantOfA(withClassName(endsWith("TextInputLayout")))
+        ))
                 .perform(replaceText(TEST_PASSWORD), closeSoftKeyboard());
 
         onView(withId(R.id.loginButton))
                 .perform(click());
 
-        // Wait for login to complete
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // Wait until the main activity is displayed
+        onView(withId(R.id.addGroupButton))
+                .check(matches(isDisplayed()));
     }
 
     @After
@@ -68,52 +73,70 @@ public class StudyBuddyUITests {
     }
 
     @Test
-    public void testNavigationFlow() {
-        // Test Home
-        onView(allOf(
-                withId(R.id.navigation_home),
-                isDescendantOfA(withId(R.id.bottomNav))
-        ))
+    public void testCreateGroup() {
+
+        onView(withId(R.id.addGroupButton))
                 .perform(click());
 
-        // Test Calendar
-        onView(allOf(
-                withId(R.id.navigation_calendar),
-                isDescendantOfA(withId(R.id.bottomNav))
-        ))
+        onView(withId(R.id.groupNameInput))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.groupNameInput))
+                .perform(replaceText("Chemistry Study Group"), closeSoftKeyboard());
+
+
+        onView(withId(R.id.courseSpinner))
                 .perform(click());
 
-        // Wait after navigation
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        onData(anything())
+                .atPosition(0)
+                .inRoot(isPlatformPopup())
+                .perform(click());
+
+
+        onView(withId(R.id.usersRecyclerView))
+                .check(matches(isDisplayed()));
+
+
+        for (int i = 0; i < 5; i++) {
+            onView(withId(R.id.usersRecyclerView))
+                    .perform(RecyclerViewActions.scrollToPosition(i));
+            onView(withId(R.id.usersRecyclerView))
+                    .perform(RecyclerViewActions.actionOnItemAtPosition(i, click()));
         }
+
+
+        onView(withId(R.id.createButton))
+                .perform(click());
+
+
+        onView(withText("Create Group")).check(doesNotExist());
     }
+
+
 
     @Test
     public void testSessionFeatures() {
-        // Navigate to calendar
-        onView(allOf(
-                withId(R.id.navigation_calendar),
-                isDescendantOfA(withId(R.id.bottomNav))
-        ))
+        onView(withId(R.id.navigation_calendar))
                 .perform(click());
-
-        // Wait after navigation
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
     public void testGroupFeatures() {
-        onView(allOf(
-                withId(R.id.navigation_home),
-                isDescendantOfA(withId(R.id.bottomNav))
-        ))
+        onView(withId(R.id.navigation_home))
+                .perform(click());
+    }
+
+    @Test
+    public void testLogout() {
+        onView(withId(R.id.navigation_logout))
+                .perform(click());
+    }
+
+    @Test
+    public void testResourceFeatures() {
+        onView(withId(R.id.navigation_resources))
                 .perform(click());
     }
 }
