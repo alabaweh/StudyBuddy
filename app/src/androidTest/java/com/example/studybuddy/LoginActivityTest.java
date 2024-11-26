@@ -56,7 +56,7 @@ public class LoginActivityTest {
 
 
         // Verify that the fragmentContainer is displayed in DashboardActivity
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragmentContainer)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -91,18 +91,15 @@ public class LoginActivityTest {
 
     @Test
     public void testFailedLogin() {
-        ActivityScenario<LoginActivity> scenario = ActivityScenario.launch(LoginActivity.class);
+        ActivityScenario.launch(LoginActivity.class);
 
-        scenario.onActivity(activity -> {
-            // Enter valid email but incorrect password
-            onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
-            onView(withId(R.id.passwordInput)).perform(typeText("WrongPassword"), closeSoftKeyboard());
+    onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
+    onView(withId(R.id.passwordInput)).perform(typeText("WrongPassword"), closeSoftKeyboard());
 
-            onView(withId(R.id.loginButton)).perform(click());
+    onView(withId(R.id.loginButton)).perform(click());
 
-            // Verify the toast message using the decor view of the activity's window
-            onView(withText("Login failed: Invalid credentials")).check(matches(isDisplayed()));
-        });
+    onView(withText("Login failed: The password is invalid or the user does not have a password.")).check(matches(isDisplayed()));
+
     }
 
     @Test

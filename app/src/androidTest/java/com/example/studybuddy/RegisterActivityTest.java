@@ -63,12 +63,14 @@ public class RegisterActivityTest {
         ActivityScenario.launch(RegisterActivity.class);
         onView(withId(R.id.registerButton)).perform(click());
 
+        String uniqueEmail = "testuser" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
+
         // Verify that errors are shown for required fields
         onView(withId(R.id.nameInput)).check(matches(hasErrorText("Please enter a valid name (3-30 characters)")));
         onView(withId(R.id.nameInput)).perform(typeText("Test User"), closeSoftKeyboard());
         onView(withId(R.id.registerButton)).perform(click());
         onView(withId(R.id.emailInput)).check(matches(hasErrorText("Please enter a valid email")));
-        onView(withId(R.id.emailInput)).perform(typeText("test@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.emailInput)).perform(typeText(uniqueEmail), closeSoftKeyboard());
         onView(withId(R.id.registerButton)).perform(click());
         onView(withId(R.id.passwordInput)).check(matches(hasErrorText(
                 "Password must:\n" +
