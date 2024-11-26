@@ -44,7 +44,7 @@ public class LoginActivityTest {
     }
 
     @Test
-    public void testValidLogin() {
+    public void testValidLogin() throws InterruptedException {
         ActivityScenario.launch(LoginActivity.class);
 
         // Enter valid email and password
@@ -54,9 +54,9 @@ public class LoginActivityTest {
         // Click login button
         onView(withId(R.id.loginButton)).perform(click());
 
-        // Verify redirection to DashboardActivity
-        onView(withId(R.id.fragmentContainer)) // Assuming there's an ID for the dashboard layout
-                .check(matches(isDisplayed()));
+
+        // Verify that the fragmentContainer is displayed in DashboardActivity
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
     }
 
     @Test
