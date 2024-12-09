@@ -66,6 +66,10 @@
             android:name=".activities.ResourcesActivity"
             android:theme="@style/Theme.StudyBuddy.NoActionBar" />
 
+        <activity
+            android:name=".activities.DirectMessageActivity"
+            android:theme="@style/Theme.StudyBuddy.NoActionBar" />
+
         <!-- Add any other activities here -->
 
     </application>

@@ -1,6 +1,7 @@
 package com.example.studybuddy.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.example.studybuddy.R;
+import com.example.studybuddy.activities.DirectMessageActivity;
 import com.example.studybuddy.models.User;
 import java.util.List;
+import android.content.Intent;
+import com.example.studybuddy.activities.DirectMessageActivity;
 
 public class MembersAdapter extends ArrayAdapter<User> {
     private Context context;
@@ -34,6 +38,7 @@ public class MembersAdapter extends ArrayAdapter<User> {
         this.removeListener = removeListener;
     }
 
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -48,7 +53,7 @@ public class MembersAdapter extends ArrayAdapter<User> {
 
         memberNameText.setText(member.getName());
 
-        // Show remove button only if current user is admin and member is not admin
+
         if (isAdmin && !member.getId().equals(members.get(0).getId()) &&
                 !member.getId().equals(currentUserId)) {
             removeButton.setVisibility(View.VISIBLE);
@@ -59,6 +64,20 @@ public class MembersAdapter extends ArrayAdapter<User> {
             });
         } else {
             removeButton.setVisibility(View.GONE);
+        }
+
+
+        if (!member.getId().equals(currentUserId)) {
+            convertView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, DirectMessageActivity.class);
+                intent.putExtra("userId", member.getId());
+                context.startActivity(intent);
+            });
+            // Make it look clickable
+//            convertView.setBackgroundResource(android.R.attr.selectableItemBackground);
+        } else {
+            convertView.setOnClickListener(null);
+            convertView.setBackground(null);
         }
 
         return convertView;

@@ -9,6 +9,7 @@ import com.example.studybuddy.R;
 import com.example.studybuddy.adapters.MembersAdapter;
 import com.example.studybuddy.models.Group;
 import com.example.studybuddy.models.User;
+import com.example.studybuddy.utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 import java.util.*;
@@ -26,6 +27,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
     private Group currentGroup;
     private List<User> membersList;
     private MembersAdapter membersAdapter;
+    private ListenerRegistration groupListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +42,13 @@ public class GroupDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Initialize Firebase and get current user ID
+        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Initialize views and setup
         initializeViews();
         setupButtons();
-        loadGroupDetails();
+        setupGroupListener();
     }
 
     private void initializeViews() {
@@ -60,12 +61,10 @@ public class GroupDetailsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         membersList = new ArrayList<>();
-
-        // Initialize adapter with isAdmin parameter
         membersAdapter = new MembersAdapter(
                 this,
                 membersList,
-                false,  // Will be updated when group loads
+                false, // Will be updated when group loads
                 currentUserId,
                 this::removeGroupMember
         );
@@ -92,13 +91,14 @@ public class GroupDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void loadGroupDetails() {
+    private void setupGroupListener() {
         progressBar.setVisibility(View.VISIBLE);
-        db.collection("groups")
+        groupListener = db.collection("groups")
                 .document(groupId)
                 .addSnapshotListener((documentSnapshot, error) -> {
+                    progressBar.setVisibility(View.GONE);
+
                     if (error != null) {
-                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(this, "Error loading group details", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -145,7 +145,6 @@ public class GroupDetailsActivity extends AppCompatActivity {
             groupNameTextView.setText(currentGroup.getName());
             courseNameTextView.setText(currentGroup.getCourseName());
 
-            // Check if current user is a member
             boolean isMember = currentGroup.getMembers().contains(currentUserId);
             boolean isAdmin = currentGroup.isAdmin(currentUserId);
 
@@ -159,7 +158,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
             );
             membersListView.setAdapter(membersAdapter);
 
-            // Show add session button for all members
+            // Show/hide action buttons based on membership
             if (isMember) {
                 addSessionButton.setVisibility(View.VISIBLE);
                 chatButton.setVisibility(View.VISIBLE);
@@ -188,9 +187,17 @@ public class GroupDetailsActivity extends AppCompatActivity {
                         membersAdapter.notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to remove member: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this,
+                                "Failed to remove member: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (groupListener != null) {
+            groupListener.remove();
         }
     }
 }

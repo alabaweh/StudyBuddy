@@ -92,6 +92,7 @@ dependencies {
     // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("junit:junit:4.12")
 
     // Android Testing
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

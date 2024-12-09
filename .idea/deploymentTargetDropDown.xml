@@ -5,19 +5,19 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="testCreateGroup()">
+      <entry key="testGroupDetails()">
         <State />
       </entry>
-      <entry key="testCreateSessionInGroup()">
+      <entry key="testGroupFeatures()">
+        <State />
+      </entry>
+      <entry key="testGroupdetails()">
+        <State />
+      </entry>
+      <entry key="testLogout()">
         <State />
       </entry>
       <entry key="testResourceFeatures()">
-        <State />
-      </entry>
-      <entry key="testSessionFeatures()">
-        <State />
-      </entry>
-      <entry key="testViewGroupDetails()">
         <State />
       </entry>
     </value>
